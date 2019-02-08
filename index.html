@@ -1,0 +1,156 @@
+<style type="text/css">
+#table {
+position: absolute;
+left: 0px;
+top: 0px;
+width: 1280px;
+height: 560px;
+background-color: white;
+}
+#footer {
+position: absolute;
+left: 0px;
+top: 570px;
+width: 1000px;
+height: 40px;
+font-size: 24px;
+background-color: grey;
+}
+#courtesy {
+position: absolute;
+left: 1000px;
+top: 570px;
+width: 280px;
+height: 40px;
+font-size: 24px;
+background-color: grey;
+text-align: right;
+}
+#bat {
+position: absolute;
+left: 320px;
+top: 530px;
+width: 120px;
+height: 20px;
+border-radius: 25px;
+background-color: brown;
+}
+#ball {
+position: absolute;
+left: 345px;
+top: 490px;
+width: 30px;
+height: 30px;
+border-radius: 30px;
+background-color: maroon;
+}
+#info {
+position: absolute;
+display: none;
+left: 0px;
+top: 0px;
+height: 720px;
+width: 1280px;
+background-color: black;
+opacity: 0.8;
+}
+#continue {
+position: absolute;
+left: 0px;
+top: 200px;
+height: 60px;
+width: 1280px;
+font-size: 28px;
+}
+body {
+background-color: black;
+}
+</style>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript">
+var bx = 490, by = 300, bxd = 1, byd = 0, score = 0, speed = 30, maxscore = 10, paused = false, level = 1;
+var tmr = null;
+$(function(){
+   $("#continue").hover(function(){
+      $(this).fadeOut().fadeIn(0);
+   });
+   $(document).mousemove(function(key) {
+      if (!paused && key.clientX > 0 && key.clientX < 1210) {
+         $("#bat").animate({
+         left: (key.clientX-35)+"px"
+         }, 0);
+      }
+   });
+   pause = function(str) {
+      window.clearTimeout(tmr);
+      tmr = null;
+      paused = true;
+      if (str !== '') str += ", ";
+      $("#continue").attr('value',str + "Click here to continue");
+      $("#info").css({display: "block"});
+   }
+   restart = function() {
+      $("#info").css({display: "none"});
+      if (score == maxscore) {
+         speed -= 10;
+         score = 0;
+         ++level;
+      } else {
+         score = 0;
+      }
+      paused = false;
+      bx = 345;
+      by = 300;
+      tmr = window.setTimeout(movingtheball, speed);
+   }
+   movingtheball = function() {
+      if (bx >= 1250) bxd = 0;
+      if (bx < 20) bxd = 1;
+      if (by >= 500) byd = 0;
+      if (by < 20) byd = 1;
+      if (by >= 500) {
+         if ((($("#bat").position().left-15) > bx || ($("#bat").position().left+120) < bx)) {
+            $("#ball").fadeOut().fadeIn();
+            console.log("bx: "+bx+"{bat left:"+$("#bat").position().left+"}");
+            pause("Game Over");
+            return;
+         } 
+         ++score;
+         $("#footer").text("Level: "+level+" | Hits: "+score+"/"+maxscore);
+      }
+      if (score == maxscore) {
+         console.log("bx: "+bx+"{bat left:"+$("#bat").position().left+"}");
+         pause("Promoted to Next Level");
+         return;
+      }
+      if (bxd) bx += 10;
+      else bx -= 10;
+      if (byd) by += 10;
+      else by -= 10;
+      $("#ball").animate({
+         left: bx+"px",
+         top: by+"px"
+      }, 0);
+      tmr = window.setTimeout(movingtheball, speed);
+   };
+   pause("");
+   $("#footer").text("Level: "+level+" | Hits: "+score+"/"+maxscore);
+   $("#courtesy").html("<a target='_blank' href='https://www.linkedin.com/in/shunmugasundaramp/'>Shunmuga Sundaram P</a>");
+});
+
+myload = function() {
+
+}
+
+</script>
+<body onload="myload()">
+<div id="table"></div>
+<div id="footer"></div>
+<div id="courtesy"></div>
+<div id="bat"></div>
+<div id="ball"></div>
+<div id="info">
+   <input id="continue" type="button" onclick="restart()" value="Click here to Continue..."></input>
+</div>
+</body>
